@@ -42,8 +42,11 @@ async function api(path, options = {}) {
 }
 
 // Builds a URL on the isolated preview origin so HTML scripts may run.
+// Returns null when the origin is unknown; never a relative URL, which would
+// silently hit the app origin and produce a confusing "Cannot GET" error.
 function previewUrl(relPath) {
-  const base = state.config?.previewOrigin || '';
+  const base = state.config?.previewOrigin;
+  if (!base) return null;
   const encoded = relPath.split('/').map(encodeURIComponent).join('/');
   return `${base}/${encoded}`;
 }
@@ -297,8 +300,17 @@ function openViewer(entry) {
   el.viewerKind.textContent = entry.kind === 'markdown' ? 'Markdown' : 'HTML';
   el.viewerName.textContent = entry.name;
   el.viewerPath.textContent = entry.path;
-  el.viewerRaw.href = previewUrl(entry.path);
+  el.viewerRaw.href = previewUrl(entry.path) || '#';
   el.viewerBody.innerHTML = '<p class="empty">Memuat…</p>';
+
+  if (!state.config?.previewOrigin) {
+    el.viewerBody.innerHTML = '';
+    const p = document.createElement('p');
+    p.className = 'empty';
+    p.textContent = 'Origin preview tidak diketahui (gagal memuat /api/config). Muat ulang halaman; jika berulang, periksa PREVIEW_URL.';
+    el.viewerBody.appendChild(p);
+    return;
+  }
 
   api(`/api/file?path=${encodeURIComponent(entry.path)}`)
     .then((data) => {
@@ -388,9 +400,14 @@ el.listing.addEventListener('drop', async (e) => {
 
 async function boot() {
   try {
-    state.config = await api('/api/config');
-  } catch {
+    state.config = await fetch('/api/config', { cache: 'no-store' }).then((r) => {
+      if (!r.ok) throw new Error(`config ${r.status}`);
+      return r.json();
+    });
+  } catch (err) {
+    // Preview falls back to <host>:<port+1>; surface why if that is wrong.
     state.config = null;
+    toast(`Gagal memuat /api/config: ${err.message}`, true);
   }
   await load('');
 }

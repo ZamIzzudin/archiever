@@ -37,8 +37,11 @@ Archive tersimpan di volume `archiever-data`, jadi data tetap ada saat container
 |---|---|---|
 | `PORT` | `3000` | Port app + API |
 | `PREVIEW_PORT` | `PORT + 1` | Port origin preview (HTML dengan JavaScript) |
-| `STORAGE_DIR` | `storage` | Lokasi penyimpanan archive di container |
+| `STORAGE_DIR` | `storage` | Lokasi penyimpanan archive di container. Di Docker pakai `/data/storage` (volume writable). |
 | `PUBLIC_URL` | diambil dari request | URL publik app, mis. `https://archive.example.com` |
+| `PREVIEW_URL` | diambil dari request | URL publik preview, mis. `https://preview.example.com`. **Jangan** samakan dengan `PUBLIC_URL`. |
+
+> **Penting:** `PUBLIC_URL` dan `PREVIEW_URL` harus dua host yang berbeda, masing-masing menunjuk ke port yang berbeda (`PUBLIC_URL` → `:3000`, `PREVIEW_URL` → `:3001`). Kalau `PREVIEW_URL` diarahkan ke host app, preview HTML akan menampilkan `Cannot GET /namafile.html` karena server app tidak menyajikan file archive secara langsung.
 | `PREVIEW_URL` | diambil dari request | URL publik preview, mis. `https://preview.example.com` |
 
 ### Di belakang reverse proxy (HTTPS)

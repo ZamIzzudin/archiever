@@ -107,10 +107,13 @@ app.use((req, res, next) => {
 
 app.get('/api/config', (req, res) => {
   const derived = `${req.protocol}://${req.hostname}:${PREVIEW_PORT}`;
+  // Never let a browser or CDN (e.g. Cloudflare) serve a stale preview origin.
+  res.set('Cache-Control', 'no-store');
   res.json({
     extensions: ['.md', '.markdown', '.html', '.htm'],
     maxPreviewBytes: MAX_PREVIEW,
     previewOrigin: PREVIEW_URL || derived,
+    source: PREVIEW_URL ? 'env:PREVIEW_URL' : 'derived',
   });
 });
 
