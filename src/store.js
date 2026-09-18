@@ -9,7 +9,18 @@ function fail(message, status = 400) {
 }
 
 export async function initStorage() {
-  await fs.mkdir(STORAGE_ROOT, { recursive: true });
+  try {
+    await fs.mkdir(STORAGE_ROOT, { recursive: true });
+  } catch (err) {
+    if (err.code === 'EACCES' || err.code === 'EPERM') {
+      throw new Error(
+        `Cannot create storage at "${STORAGE_ROOT}": permission denied. ` +
+          'Set STORAGE_DIR to a writable path (e.g. /data/storage in Docker) ' +
+          'instead of a path owned by root, such as a relative path under /app.',
+      );
+    }
+    throw err;
+  }
 }
 
 export function isAllowedFile(name) {
