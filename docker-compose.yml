@@ -1,0 +1,22 @@
+services:
+  archiever:
+    build: .
+    image: archiever:latest
+    container_name: archiever
+    restart: unless-stopped
+    ports:
+      - "3000:3000"   # app + API
+      - "3001:3001"   # isolated preview origin
+    environment:
+      PORT: 3000
+      PREVIEW_PORT: 3001
+      STORAGE_DIR: /data/storage
+      # Wajib diisi jika diakses lewat reverse proxy HTTPS (nginx/Caddy/Traefik)
+      # agar preview HTML tidak diblokir sebagai mixed content.
+      # PUBLIC_URL: https://archive.example.com
+      # PREVIEW_URL: https://preview.example.com
+    volumes:
+      - archiever-data:/data/storage
+
+volumes:
+  archiever-data:

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Archiever</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">A</span>
+      <div>
+        <h1>Archiever</h1>
+        <p>Archive untuk file Markdown &amp; HTML</p>
+      </div>
+    </div>
+
+    <div class="search">
+      <input id="search" type="search" placeholder="Cari folder atau file…" autocomplete="off" />
+    </div>
+
+    <div class="actions">
+      <button id="new-folder" class="btn">Folder Baru</button>
+      <button id="upload" class="btn btn-primary">Upload</button>
+      <input id="file-input" type="file" multiple accept=".md,.markdown,.html,.htm" hidden />
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <span>Direktori</span>
+      </div>
+      <nav id="tree" class="tree" aria-label="Pohon direktori"></nav>
+    </aside>
+
+    <main class="content">
+      <nav id="breadcrumb" class="breadcrumb" aria-label="Breadcrumb"></nav>
+
+      <div id="dropzone" class="dropzone">
+        <p>Tarik &amp; lepas file <strong>.md</strong> atau <strong>.html</strong> ke sini, atau klik <strong>Upload</strong>.</p>
+      </div>
+
+      <div id="listing" class="listing" aria-live="polite"></div>
+      <p id="empty" class="empty" hidden>Belum ada file di folder ini.</p>
+    </main>
+  </div>
+
+  <div id="viewer" class="viewer" hidden>
+    <div class="viewer-bar">
+      <div class="viewer-title">
+        <span id="viewer-kind" class="badge"></span>
+        <span id="viewer-name" class="viewer-file"></span>
+        <span id="viewer-path" class="viewer-path"></span>
+      </div>
+      <div class="viewer-actions">
+        <a id="viewer-raw" class="btn btn-ghost" href="#" target="_blank" rel="noopener">Buka file asli</a>
+        <button id="viewer-close" class="btn btn-ghost">Tutup</button>
+      </div>
+    </div>
+    <div id="viewer-body" class="viewer-body"></div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
