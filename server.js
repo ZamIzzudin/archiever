@@ -185,6 +185,18 @@ previewApp.use((err, req, res, next) => {
   res.status(err.status || 500).end('Preview error');
 });
 
+// Startup diagnostics: makes misconfigured env obvious in the logs.
+console.log('--- archiever config ---');
+console.log(`cwd:           ${process.cwd()}`);
+console.log(`uid/gid:       ${process.getuid?.() ?? 'n/a'}/${process.getgid?.() ?? 'n/a'}`);
+console.log(`STORAGE_DIR:   ${process.env.STORAGE_DIR ?? '(unset, defaults to ./storage)'}`);
+console.log(`resolved:      ${STORAGE_ROOT}`);
+console.log(`PORT:          ${PORT}`);
+console.log(`PREVIEW_PORT:  ${PREVIEW_PORT}`);
+console.log(`PUBLIC_URL:    ${PUBLIC_URL || '(derived from request)'}`);
+console.log(`PREVIEW_URL:   ${PREVIEW_URL || '(derived from request)'}`);
+console.log('------------------------');
+
 await initStorage();
 console.log(`Archive storage: ${STORAGE_ROOT}`);
 

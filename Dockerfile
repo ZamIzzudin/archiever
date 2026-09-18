@@ -21,8 +21,10 @@ ENV PORT=3000 \
     PREVIEW_PORT=3001 \
     STORAGE_DIR=/data/storage
 
-# The archive lives on a volume; make it writable by the app user.
-RUN mkdir -p "$STORAGE_DIR" && chown -R app:app /data
+# The archive lives on a volume; make it writable by the app user. Also prepare a
+# writable fallback at the workdir so a relative STORAGE_DIR (e.g. "storage")
+# still works instead of failing with EACCES.
+RUN mkdir -p "$STORAGE_DIR" /app/storage && chown -R app:app /data /app/storage
 USER app
 
 # 3000 = app + API, 3001 = isolated preview origin (HTML with scripts)
